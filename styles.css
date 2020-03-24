@@ -4,7 +4,7 @@ body {
     background-color: rgb(230, 248, 248);
   }
 
-.board-container {
+.card-container {
     display: flex;
     flex-direction: row;
 }

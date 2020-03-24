@@ -1,12 +1,58 @@
-document.addEventListener("DOMContentLoaded", () => pageSetup());
+const BASE_URL = "http://localhost:3000";
+const CARDS_URL = `${BASE_URL}/cards`;
+const ITEMS_URL = `${BASE_URL}/items`;
+const container = document.querySelector(".card-container");
 
-function pageSetup() {
-  console.log("pageSetup has been reached");
-  dragableSetup();
-  newCardSetup();
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("DOM Content Loaded");
+  renderCards();
+});
+
+function renderCards() {
+  console.log("Rendering page");
+  container.innerHTML = "";
+  let newCard = document.createElement("div");
+  newCard.id = "new-card";
+  container.append(newCard);
+
+  fetch(CARDS_URL)
+    .then(resp => resp.json())
+    .then(json => json.forEach(card => makeCard(card)))
+    .then(() => setDragableEvents());
 }
 
-function dragableSetup() {
+function makeCard(card) {
+  let referenceNode = document.querySelector("#new-card");
+  let newCard = document.createElement("div");
+  newCard.className = "temp-card";
+  newCard.setAttribute("draggable", "true");
+
+  let cardHeader = document.createElement("p");
+  cardHeader.addEventListener("click", () => console.log("clicked card title"));
+  cardHeader.innerText = card.title;
+  let cardAddItem = document.createElement("button");
+  cardAddItem.addEventListener("click", () =>
+    console.log("clicked card title")
+  );
+  cardAddItem.innerText = "Add Item";
+
+  newCard.append(cardHeader, cardAddItem);
+  container.insertBefore(newCard, referenceNode);
+
+  card.items.forEach(item => makeItem(item));
+  newCard.className = "card";
+}
+
+function makeItem(item) {
+  let card = document.querySelector(".temp-card");
+  let newItem = document.createElement("div");
+  newItem.setAttribute("draggable", "true");
+  newItem.className = "item";
+  newItem.innerText = item.title;
+  card.appendChild(newItem);
+}
+
+function setDragableEvents() {
   let items = document.querySelectorAll(".item");
   let cards = document.querySelectorAll(".card");
   let draggedItem = null;
@@ -42,40 +88,10 @@ function dragableSetup() {
     });
 
     card.addEventListener("drop", e => {
-      if (draggedItem != null) {
-        e.target.append(draggedItem);
+      let card = e.target;
+      if (draggedItem != null && e.target.className == "card") {
+        card.append(draggedItem);
       }
     });
   }
-}
-
-function newCardSetup() {
-  document.querySelector("#new-card").addEventListener("click", () => {
-    let parentNode = document.querySelector(".board-container");
-    let referenceNode = document.querySelector("#new-card");
-
-    let newCard = document.createElement("div");
-    newCard.className = "card";
-    newCard.setAttribute("draggable", "true");
-    let cardHeader = document.createElement("p");
-    let cardAddItem = document.createElement("button");
-    cardAddItem.addEventListener("click",(e) => makeItem(e))
-    cardHeader.innerText = "New Card";
-    cardAddItem.innerText = "Add Item";
-    newCard.append(cardHeader, cardAddItem);
-
-    parentNode.insertBefore(newCard, referenceNode);
-    dragableSetup()
-  });
-}
-
-function makeItem(event) {
-    console.log(event)
-    let newItem = document.createElement("div")
-    newItem.className = "item"
-    newItem.innerText = "New Item"
-    newItem.setAttribute("draggable","true")
-    debugger
-    event.target.parentElement.appendChild(newItem)
-    dragableSetup()
 }
