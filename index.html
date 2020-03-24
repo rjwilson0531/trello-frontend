@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <title>Trello!</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <h2>Trello!</h2>
+    </header>
+    <main class="board-container">
+      <div class="card">
+        <p>Daily tasks</p>
+        <button>Add item</button>
+        <div class="item" draggable="true">Do a 360 Dab</div>
+      </div>
+
+      <div class="card">
+        <p>In progress</p>
+        <button data-board-id="1">Add item</button>
+      </div>
+
+      <div class="card">
+        <p>Completed</p>
+        <button data-board-id="1">Add item</button>
+      </div>
+
+      <div id="new-card">
+        Hello
+      </div>
+    </main>
+
+    <script src="./js/index.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/@shopify/draggable@1.0.0-beta.6/lib/draggable.bundle.js"></script> -->
+  </body>
+</html>
