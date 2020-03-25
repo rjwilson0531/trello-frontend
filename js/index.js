@@ -14,6 +14,7 @@ function renderCards() {
 
   let newCard = document.createElement("div");
   newCard.id = "new-card";
+  newCard.addEventListener("click",(e)=>createCard(e))
   container.append(newCard);
 
   fetch(CARDS_URL)
@@ -38,8 +39,9 @@ function makeCard(card) {
 
   newCard.append(cardHeader, cardAddItem);
   container.insertBefore(newCard, document.querySelector("#new-card"));
-
+  if (card.items){
   card.items.forEach(item => makeItem(item));
+  }
   newCard.className = "card";
 }
 
@@ -58,19 +60,33 @@ function createItem(event) {
     .then(item => makeItem(item));
 }
 
+// function deleteItem(event) {
+//   // document.querySelector(`[data-card-id=${CSS.escape(card.id)}]`);
+//   let card_id = parseInt(event.target.parentElement.dataset.cardId);
+//   fetch(ITEMS_URL, {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//       Accepts: "application/json"
+//     },
+//     body: JSON.stringify({ card_id: card_id, title: "hello", content: "Hello" })
+//   })
+//     .then(resp => resp.json())
+//     .then(item => makeItem(item));
+// }
+
 function createCard(event) {
   // document.querySelector(`[data-card-id=${CSS.escape(card.id)}]`);
-  let card_id = parseInt(event.target.parentElement.dataset.cardId);
-  fetch(ITEMS_URL, {
+  fetch(CARDS_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Accepts: "application/json"
     },
-    body: JSON.stringify({ card_id: card_id, title: "hello", content: "Hello" })
+    body: JSON.stringify({title: "hello"})
   })
     .then(resp => resp.json())
-    .then(item => makeItem(item));
+    .then(card => makeCard(card));
 }
 
 function makeItem(item) {
@@ -122,9 +138,12 @@ function setDragableEvents() {
     });
 
     card.addEventListener("drop", e => {
-      let card = e.target;
       if (draggedItem != null && e.target.className == "card") {
-        card.append(draggedItem);
+        e.target.append(draggedItem);
+      }
+      if (draggedItem != null && e.target.className == "item") {
+        let card = e.target.parentElement
+        card.insertBefore(draggedItem,e.target)
       }
     });
   }
