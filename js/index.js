@@ -25,7 +25,7 @@ function renderCards() {
 function makeCard(card) {
   let newCard = document.createElement("div");
   newCard.className = "temp-card";
-  newCard.dataset.cardId = card.id
+  newCard.dataset.cardId = card.id;
   newCard.setAttribute("draggable", "true");
 
   let cardHeader = document.createElement("p");
@@ -45,43 +45,45 @@ function makeCard(card) {
 
 function createItem(event) {
   // document.querySelector(`[data-card-id=${CSS.escape(card.id)}]`);
-  let card_id = parseInt(event.target.parentElement.dataset.cardId)
-  fetch(ITEMS_URL,{
-    method:"POST",
-    headers:{
-        "Content-Type": "application/json",
-        "Accepts": "application/json"    
+  let card_id = parseInt(event.target.parentElement.dataset.cardId);
+  fetch(ITEMS_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accepts: "application/json"
     },
-    body: JSON.stringify({"card_id": card_id, "title": "hello" , "content": "Hello"})
+    body: JSON.stringify({ card_id: card_id, title: "hello", content: "Hello" })
   })
-  .then(resp => resp.json())
-  .then(item => makeItem(item)) 
+    .then(resp => resp.json())
+    .then(item => makeItem(item));
 }
 
 function createCard(event) {
   // document.querySelector(`[data-card-id=${CSS.escape(card.id)}]`);
-  let card_id = parseInt(event.target.parentElement.dataset.cardId)
-  fetch(ITEMS_URL,{
-    method:"POST",
-    headers:{
-        "Content-Type": "application/json",
-        "Accepts": "application/json"    
+  let card_id = parseInt(event.target.parentElement.dataset.cardId);
+  fetch(ITEMS_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accepts: "application/json"
     },
-    body: JSON.stringify({"card_id": card_id, "title": "hello" , "content": "Hello"})
+    body: JSON.stringify({ card_id: card_id, title: "hello", content: "Hello" })
   })
-  .then(resp => resp.json())
-  .then(item => makeItem(item)) 
+    .then(resp => resp.json())
+    .then(item => makeItem(item));
 }
 
 function makeItem(item) {
   // document.querySelector(`[data-card-id=${CSS.escape(card.id)}]`);
-  let card = document.querySelector(`[data-card-id=${CSS.escape(item.card_id)}]`); //
+  let card = document.querySelector(
+    `[data-card-id=${CSS.escape(item.card_id)}]`
+  ); //
   let newItem = document.createElement("div");
   newItem.setAttribute("draggable", "true");
   newItem.className = "item";
   newItem.innerText = item.title;
   card.appendChild(newItem);
-  setDragableEvents()
+  setDragableEvents();
 }
 
 function setDragableEvents() {
