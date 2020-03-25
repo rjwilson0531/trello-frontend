@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
 function renderCards() {
   console.log("Rendering page");
   container.innerHTML = "";
+
   let newCard = document.createElement("div");
   newCard.id = "new-card";
   container.append(newCard);
@@ -22,34 +23,65 @@ function renderCards() {
 }
 
 function makeCard(card) {
-  let referenceNode = document.querySelector("#new-card");
   let newCard = document.createElement("div");
   newCard.className = "temp-card";
+  newCard.dataset.cardId = card.id
   newCard.setAttribute("draggable", "true");
 
   let cardHeader = document.createElement("p");
-  cardHeader.addEventListener("click", () => console.log("clicked card title"));
   cardHeader.innerText = card.title;
+  cardHeader.addEventListener("click", () => console.log("clicked card title"));
+
   let cardAddItem = document.createElement("button");
-  cardAddItem.addEventListener("click", () =>
-    console.log("clicked card title")
-  );
   cardAddItem.innerText = "Add Item";
+  cardAddItem.addEventListener("click", e => createItem(e));
 
   newCard.append(cardHeader, cardAddItem);
-  container.insertBefore(newCard, referenceNode);
+  container.insertBefore(newCard, document.querySelector("#new-card"));
 
   card.items.forEach(item => makeItem(item));
   newCard.className = "card";
 }
 
+function createItem(event) {
+  // document.querySelector(`[data-card-id=${CSS.escape(card.id)}]`);
+  let card_id = parseInt(event.target.parentElement.dataset.cardId)
+  fetch(ITEMS_URL,{
+    method:"POST",
+    headers:{
+        "Content-Type": "application/json",
+        "Accepts": "application/json"    
+    },
+    body: JSON.stringify({"card_id": card_id, "title": "hello" , "content": "Hello"})
+  })
+  .then(resp => resp.json())
+  .then(item => makeItem(item)) 
+}
+
+function createCard(event) {
+  // document.querySelector(`[data-card-id=${CSS.escape(card.id)}]`);
+  let card_id = parseInt(event.target.parentElement.dataset.cardId)
+  fetch(ITEMS_URL,{
+    method:"POST",
+    headers:{
+        "Content-Type": "application/json",
+        "Accepts": "application/json"    
+    },
+    body: JSON.stringify({"card_id": card_id, "title": "hello" , "content": "Hello"})
+  })
+  .then(resp => resp.json())
+  .then(item => makeItem(item)) 
+}
+
 function makeItem(item) {
-  let card = document.querySelector(".temp-card");
+  // document.querySelector(`[data-card-id=${CSS.escape(card.id)}]`);
+  let card = document.querySelector(`[data-card-id=${CSS.escape(item.card_id)}]`); //
   let newItem = document.createElement("div");
   newItem.setAttribute("draggable", "true");
   newItem.className = "item";
   newItem.innerText = item.title;
   card.appendChild(newItem);
+  setDragableEvents()
 }
 
 function setDragableEvents() {
@@ -77,8 +109,8 @@ function setDragableEvents() {
     });
   }
 
-  for (let j = 0; j < cards.length; j++) {
-    card = cards[j];
+  for (let i = 0; i < cards.length; i++) {
+    card = cards[i];
     card.addEventListener("dragover", e => {
       e.preventDefault();
     });
@@ -94,4 +126,8 @@ function setDragableEvents() {
       }
     });
   }
+}
+
+function getCardById(xCardId) {
+  fetch
 }
