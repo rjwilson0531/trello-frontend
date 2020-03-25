@@ -127,7 +127,3 @@ function setDragableEvents() {
     });
   }
 }
-
-function getCardById(xCardId) {
-  fetch
-}
