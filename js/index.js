@@ -13,8 +13,9 @@ function renderCards() {
   container.innerHTML = "";
 
   let newCard = document.createElement("div");
+  
+  newCard.append(newCardForm())
   newCard.id = "new-card";
-  newCard.addEventListener("click", e => createCard(e));
   container.append(newCard);
 
   fetch(CARDS_URL)
@@ -22,6 +23,47 @@ function renderCards() {
     .then(json => json.forEach(card => makeCard(card)))
     .then(() => setDragableEvents());
 }
+
+function newCardForm() {
+  let newCardForm = document.createElement("form")
+  let newCardInput = document.createElement("input");
+  newCardInput.setAttribute("type","text")
+  newCardInput.setAttribute("id","title")
+  newCardInput.setAttribute("name","title")
+  newCardInput.setAttribute("value","New Card")
+
+  let newCardSubmit = document.createElement("input");
+  newCardSubmit.setAttribute("type","submit")
+
+  newCardForm.append(newCardInput,newCardSubmit)
+  newCardForm.addEventListener("submit", e => 
+  {
+    event.preventDefault()
+    createCard(e)
+  });
+  return newCardForm
+}
+
+function newItemForm() {
+  let newItemForm = document.createElement("form")
+  let newItemInput = document.createElement("input");
+  newItemInput.setAttribute("type","text")
+  newItemInput.setAttribute("id","title")
+  newItemInput.setAttribute("name","title")
+  newItemInput.setAttribute("value","New Item")
+
+  let newItemSubmit = document.createElement("input");
+  newItemSubmit.setAttribute("type","submit")
+
+  newItemForm.append(newItemInput,newItemSubmit)
+  newItemForm.addEventListener("submit", e => 
+  {
+    event.preventDefault()
+    createItem(e)
+  });
+  return newItemForm
+}
+
 
 function makeCard(card) {
   let newCard = document.createElement("div");
@@ -32,11 +74,12 @@ function makeCard(card) {
   cardAddItem.innerText = "Add Item";
   cardAddItem.addEventListener("click", e => createItem(e));
 
-  newCard.append(cardTitle(card), cardAddItem);
+  newCard.append(cardTitle(card), newItemForm());
   container.insertBefore(newCard, document.querySelector("#new-card"));
   if (card.items) {
     card.items.forEach(item => makeItem(item));
   }
+  setDragableEvents()
 }
 
 function createItem(event) {
@@ -48,7 +91,7 @@ function createItem(event) {
       "Content-Type": "application/json",
       Accepts: "application/json"
     },
-    body: JSON.stringify({ card_id: card_id, title: "hello", content: "Hello" })
+    body: JSON.stringify({ card_id: card_id, title: event.target.elements[0].value, content: "Hello" })
   })
     .then(resp => resp.json())
     .then(item => makeItem(item));
@@ -66,20 +109,23 @@ function deleteCard(event) {
       Accepts: "application/json"
     },
     body: JSON.stringify({ card_id: card_id })
-  }).then(() => renderCards());
+  }).then(() => {
+    let elem =  document.querySelector(`[data-card-id=${CSS.escape(card_id)}]`);
+    elem.parentNode.removeChild(elem)
+  })
 }
 
 function deleteItem(event) {
-  let card_id = parseInt(
-    event.target.parentElement.parentElement.dataset.cardId
+  let item_id = parseInt(
+    event.target.dataset.itemId
   );
-  fetch(CARDS_URL + `/${card_id}`, {
+  fetch(ITEMS_URL + `/${item_id}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
       Accepts: "application/json"
     },
-    body: JSON.stringify({ card_id: card_id })
+    body: JSON.stringify({ item_id: item_id })
   }).then(() => renderCards());
 }
 
@@ -91,7 +137,7 @@ function createCard(event) {
       "Content-Type": "application/json",
       Accepts: "application/json"
     },
-    body: JSON.stringify({ title: "hello" })
+    body: JSON.stringify({ title: event.target.elements[0].value })
   })
     .then(resp => resp.json())
     .then(card => makeCard(card));
@@ -108,6 +154,7 @@ function makeItem(item) {
   newItem.innerText = item.title;
   newItem.dataset.itemId = item.id;
   card.appendChild(newItem);
+  newItem.addEventListener("dblclick", (e)=>deleteItem(e))
   setDragableEvents();
 }
 
@@ -148,9 +195,10 @@ function setDragableEvents() {
 
     card.addEventListener("drop", e => {
       if (draggedItem != null && e.target.className == "card") {
-        e.target.append(draggedItem);
+        let myCard = event.target
+        myCard.append(draggedItem);
         let itemId = draggedItem.dataset.itemId;
-        let newCardId = event.target.dataset.cardId;
+        let newCardId = myCard.dataset.cardId;
         fetch(ITEMS_URL+ "/" + itemId.toString(), {
           method: "PATCH",
           headers: {
@@ -159,6 +207,7 @@ function setDragableEvents() {
           },
           body: JSON.stringify({ "card_id": newCardId })
         })
+        .then(()=> setDragableEvents())
       }
       if (draggedItem != null && e.target.className == "item") {
         let card = e.target.parentElement;
