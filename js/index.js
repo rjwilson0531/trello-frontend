@@ -149,8 +149,16 @@ function setDragableEvents() {
     card.addEventListener("drop", e => {
       if (draggedItem != null && e.target.className == "card") {
         e.target.append(draggedItem);
-        debugger;
-        0;
+        let itemId = draggedItem.dataset.itemId;
+        let newCardId = event.target.dataset.cardId;
+        fetch(ITEMS_URL+ "/" + itemId.toString(), {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Accepts: "application/json"
+          },
+          body: JSON.stringify({ "card_id": newCardId })
+        })
       }
       if (draggedItem != null && e.target.className == "item") {
         let card = e.target.parentElement;
