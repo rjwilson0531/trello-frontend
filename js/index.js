@@ -14,7 +14,7 @@ function renderCards() {
 
   let newCard = document.createElement("div");
   newCard.id = "new-card";
-  newCard.addEventListener("click",(e)=>createCard(e))
+  newCard.addEventListener("click", e => createCard(e));
   container.append(newCard);
 
   fetch(CARDS_URL)
@@ -25,33 +25,18 @@ function renderCards() {
 
 function makeCard(card) {
   let newCard = document.createElement("div");
+  newCard.className = "card";
   newCard.dataset.cardId = card.id;
-  newCard.setAttribute("draggable", "true");
-
-  let cardTitle = document.createElement("div");
-  cardTitle.className = "card-titlebar"
-  let cardHeader = document.createElement("span");
-  cardHeader.className = "card-header"
-  cardHeader.innerText = card.title;
-  cardHeader.addEventListener("click", () => console.log("clicked card title"));
-
-  let cardDelete = document.createElement("div");
-  cardDelete.innerText = "X";
-  cardDelete.classList += " card-delete"
-  cardDelete.addEventListener("click", (e) => deleteCard(e));
-
-  cardTitle.append(cardHeader,cardDelete)
 
   let cardAddItem = document.createElement("button");
   cardAddItem.innerText = "Add Item";
   cardAddItem.addEventListener("click", e => createItem(e));
 
-  newCard.append(cardTitle, cardAddItem);
+  newCard.append(cardTitle(card), cardAddItem);
   container.insertBefore(newCard, document.querySelector("#new-card"));
-  if (card.items){
-  card.items.forEach(item => makeItem(item));
+  if (card.items) {
+    card.items.forEach(item => makeItem(item));
   }
-  newCard.className = "card";
 }
 
 function createItem(event) {
@@ -71,32 +56,32 @@ function createItem(event) {
 
 function deleteCard(event) {
   // document.querySelector(`[data-card-id=${CSS.escape(card.id)}]`);
-  let card_id = parseInt(event.target.parentElement.parentElement.dataset.cardId);
-  fetch(CARDS_URL+ `/${card_id}`, {
+  let card_id = parseInt(
+    event.target.parentElement.parentElement.dataset.cardId
+  );
+  fetch(CARDS_URL + `/${card_id}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
       Accepts: "application/json"
     },
-    body: JSON.stringify({ card_id: card_id})
-  })
-    .then(() => renderCards())
+    body: JSON.stringify({ card_id: card_id })
+  }).then(() => renderCards());
 }
 
-// function deleteItem(event) {
-//   // document.querySelector(`[data-card-id=${CSS.escape(card.id)}]`);
-//   let card_id = parseInt(event.target.parentElement.dataset.cardId);
-//   fetch(ITEMS_URL, {
-//     method: "POST",
-//     headers: {
-//       "Content-Type": "application/json",
-//       Accepts: "application/json"
-//     },
-//     body: JSON.stringify({ card_id: card_id, title: "hello", content: "Hello" })
-//   })
-//     .then(resp => resp.json())
-//     .then(item => makeItem(item));
-// }
+function deleteItem(event) {
+  let card_id = parseInt(
+    event.target.parentElement.parentElement.dataset.cardId
+  );
+  fetch(CARDS_URL + `/${card_id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Accepts: "application/json"
+    },
+    body: JSON.stringify({ card_id: card_id })
+  }).then(() => renderCards());
+}
 
 function createCard(event) {
   // document.querySelector(`[data-card-id=${CSS.escape(card.id)}]`);
@@ -106,7 +91,7 @@ function createCard(event) {
       "Content-Type": "application/json",
       Accepts: "application/json"
     },
-    body: JSON.stringify({title: "hello"})
+    body: JSON.stringify({ title: "hello" })
   })
     .then(resp => resp.json())
     .then(card => makeCard(card));
@@ -121,6 +106,7 @@ function makeItem(item) {
   newItem.setAttribute("draggable", "true");
   newItem.className = "item";
   newItem.innerText = item.title;
+  newItem.dataset.itemId = item.id;
   card.appendChild(newItem);
   setDragableEvents();
 }
@@ -163,11 +149,30 @@ function setDragableEvents() {
     card.addEventListener("drop", e => {
       if (draggedItem != null && e.target.className == "card") {
         e.target.append(draggedItem);
+        debugger;
+        0;
       }
       if (draggedItem != null && e.target.className == "item") {
-        let card = e.target.parentElement
-        card.insertBefore(draggedItem,e.target)
+        let card = e.target.parentElement;
+        card.insertBefore(draggedItem, e.target);
       }
     });
   }
+}
+
+function cardTitle(card) {
+  let cardTitle = document.createElement("div");
+  cardTitle.className = "card-titlebar";
+  let cardHeader = document.createElement("span");
+  cardHeader.className = "card-header";
+  cardHeader.innerText = card.title;
+  cardHeader.addEventListener("click", () => console.log("clicked card title"));
+
+  let cardDelete = document.createElement("div");
+  cardDelete.innerText = "X";
+  cardDelete.classList += " card-delete";
+  cardDelete.addEventListener("click", e => deleteCard(e));
+
+  cardTitle.append(cardHeader, cardDelete);
+  return cardTitle;
 }
