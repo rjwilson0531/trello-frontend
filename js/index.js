@@ -25,19 +25,28 @@ function renderCards() {
 
 function makeCard(card) {
   let newCard = document.createElement("div");
-  newCard.className = "temp-card";
   newCard.dataset.cardId = card.id;
   newCard.setAttribute("draggable", "true");
 
-  let cardHeader = document.createElement("p");
+  let cardTitle = document.createElement("div");
+  cardTitle.className = "card-titlebar"
+  let cardHeader = document.createElement("span");
+  cardHeader.className = "card-header"
   cardHeader.innerText = card.title;
   cardHeader.addEventListener("click", () => console.log("clicked card title"));
+
+  let cardDelete = document.createElement("div");
+  cardDelete.innerText = "X";
+  cardDelete.classList += " card-delete"
+  cardDelete.addEventListener("click", (e) => deleteCard(e));
+
+  cardTitle.append(cardHeader,cardDelete)
 
   let cardAddItem = document.createElement("button");
   cardAddItem.innerText = "Add Item";
   cardAddItem.addEventListener("click", e => createItem(e));
 
-  newCard.append(cardHeader, cardAddItem);
+  newCard.append(cardTitle, cardAddItem);
   container.insertBefore(newCard, document.querySelector("#new-card"));
   if (card.items){
   card.items.forEach(item => makeItem(item));
@@ -58,6 +67,20 @@ function createItem(event) {
   })
     .then(resp => resp.json())
     .then(item => makeItem(item));
+}
+
+function deleteCard(event) {
+  // document.querySelector(`[data-card-id=${CSS.escape(card.id)}]`);
+  let card_id = parseInt(event.target.parentElement.parentElement.dataset.cardId);
+  fetch(CARDS_URL+ `/${card_id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Accepts: "application/json"
+    },
+    body: JSON.stringify({ card_id: card_id})
+  })
+    .then(() => renderCards())
 }
 
 // function deleteItem(event) {

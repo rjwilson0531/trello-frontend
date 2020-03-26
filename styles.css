@@ -36,3 +36,23 @@ div.card {
     height: 246px;
     padding: 8px;
   }
+
+  .card-titlebar{
+    display: flex;
+  }
+
+  .card-delete{
+    min-width: 15%;
+    border: red;
+    text-align: center;
+  }
+
+  .card-delete:hover{
+    background-color: red !important;
+  }
+
+  .card-header{
+    background-color: blue;
+    min-width: 85%;
+    color: white;
+  }
