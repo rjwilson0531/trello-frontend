@@ -24,47 +24,6 @@ function renderCards() {
     .then(() => setDragableEvents());
 }
 
-function newCardForm() {
-  let newCardForm = document.createElement("form")
-  let newCardInput = document.createElement("input");
-  newCardInput.setAttribute("type","text")
-  newCardInput.setAttribute("id","title")
-  newCardInput.setAttribute("name","title")
-  newCardInput.setAttribute("value","New Card")
-
-  let newCardSubmit = document.createElement("input");
-  newCardSubmit.setAttribute("type","submit")
-
-  newCardForm.append(newCardInput,newCardSubmit)
-  newCardForm.addEventListener("submit", e => 
-  {
-    event.preventDefault()
-    createCard(e)
-  });
-  return newCardForm
-}
-
-function newItemForm() {
-  let newItemForm = document.createElement("form")
-  let newItemInput = document.createElement("input");
-  newItemInput.setAttribute("type","text")
-  newItemInput.setAttribute("id","title")
-  newItemInput.setAttribute("name","title")
-  newItemInput.setAttribute("value","New Item")
-
-  let newItemSubmit = document.createElement("input");
-  newItemSubmit.setAttribute("type","submit")
-
-  newItemForm.append(newItemInput,newItemSubmit)
-  newItemForm.addEventListener("submit", e => 
-  {
-    event.preventDefault()
-    createItem(e)
-  });
-  return newItemForm
-}
-
-
 function makeCard(card) {
   let newCard = document.createElement("div");
   newCard.className = "card";
@@ -232,4 +191,44 @@ function cardTitle(card) {
 
   cardTitle.append(cardHeader, cardDelete);
   return cardTitle;
+}
+
+function newCardForm() {
+  let newCardForm = document.createElement("form")
+  let newCardInput = document.createElement("input");
+  newCardInput.setAttribute("type","text")
+  newCardInput.setAttribute("id","title")
+  newCardInput.setAttribute("name","title")
+  newCardInput.setAttribute("value","New Card")
+
+  let newCardSubmit = document.createElement("input");
+  newCardSubmit.setAttribute("type","submit")
+
+  newCardForm.append(newCardInput,newCardSubmit)
+  newCardForm.addEventListener("submit", e => 
+  {
+    event.preventDefault()
+    createCard(e)
+  });
+  return newCardForm
+}
+
+function newItemForm() {
+  let newItemForm = document.createElement("form")
+  let newItemInput = document.createElement("input");
+  newItemInput.setAttribute("type","text")
+  newItemInput.setAttribute("id","title")
+  newItemInput.setAttribute("name","title")
+  newItemInput.setAttribute("value","New Item")
+
+  let newItemSubmit = document.createElement("input");
+  newItemSubmit.setAttribute("type","submit")
+
+  newItemForm.append(newItemInput,newItemSubmit)
+  newItemForm.addEventListener("submit", e => 
+  {
+    event.preventDefault()
+    createItem(e)
+  });
+  return newItemForm
 }
